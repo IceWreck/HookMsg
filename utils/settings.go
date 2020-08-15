@@ -7,16 +7,20 @@ import (
 	"os"
 )
 
+// Settings - struct to define settings
 type Settings struct {
 	DeploymentName     string `json:"deployment_name"`
-	DeploymentURL      string `json:"localhost:3333"`
+	DeploymentPort     int    `json:"deployment_port"`
+	DeploymentURL      string `json:"deployment_url"`
 	TelegramUserName   string `json:"telegram_user"`
 	TelegramUserChatID int64  `json:"telegram_user_chat_id"`
 	TelegramToken      string `json:"telegram_token"`
+	ScriptsDir         string `json:"scripts_directory"`
 	SMTPEmail          string
 	SMTPPort           int
 }
 
+// Config - settings which you load from your JSON
 var Config Settings = loadSettings()
 
 func loadSettings() Settings {

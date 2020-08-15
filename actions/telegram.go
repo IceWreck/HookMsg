@@ -10,6 +10,7 @@ import (
 
 var TgBot tgbotapi.BotAPI
 
+// InitializeTG - starts the tg poller
 func InitializeTG() {
 
 	bot, err := tgbotapi.NewBotAPI(utils.Config.TelegramToken)

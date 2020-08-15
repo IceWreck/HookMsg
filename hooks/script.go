@@ -3,16 +3,19 @@ package hooks
 import (
 	"WebMsg/actions"
 	"net/http"
+
+	"github.com/go-chi/chi"
 )
 
-// TelegramHook is the endpoint where the user will POST the message they wanna send
+// ScriptHook is the endpoint where the user will POST the script's name
 func ScriptHook(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	formValues := r.Form
-	var scriptInfo = actions.Script{
-		FileName: formValues["filename"][0],
-		Shell:    formValues["shell"][0],
+	formResults := map[string]string{
+		"endpoint": chi.URLParam(r, "endpoint"),
+		"secret":   formValues.Get("secret"),
 	}
-	go actions.RunScript(scriptInfo)
+
+	go actions.RunScript(formResults)
 	w.Write([]byte("OK"))
 }

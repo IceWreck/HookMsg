@@ -5,6 +5,9 @@ import (
 
 	"WebMsg/actions"
 	"WebMsg/hooks"
+	"WebMsg/utils"
+	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -30,8 +33,9 @@ func main() {
 
 	r.Route("/hooks", func(r chi.Router) {
 		r.Post("/telegram", hooks.TelegramHook)
-		r.Post("/script", hooks.ScriptHook)
+		r.Post("/script/{endpoint}", hooks.ScriptHook)
 	})
 
-	http.ListenAndServe(":3333", r)
+	log.Println("Running it at port ", utils.Config.DeploymentPort)
+	http.ListenAndServe(fmt.Sprintf(":%d", utils.Config.DeploymentPort), r)
 }
