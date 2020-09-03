@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"WebMsg/utils"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -21,11 +22,11 @@ func RunScript(formResults map[string]string) {
 
 	// Read enabled_scripts.json
 	var scripts []Script
-	jsonFile, err := os.Open("enabled_scripts.json")
+	jsonFile, err := os.Open(utils.Config.ScriptsConfig)
 	if err != nil {
-		log.Println("enabled_scripts.json not found.")
+		log.Println("Script config file not found.")
 	} else {
-		log.Println("Loaded enabled_scripts.json")
+		log.Println("Loaded script config file.")
 	}
 	defer jsonFile.Close()
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -38,7 +39,7 @@ func RunScript(formResults map[string]string) {
 			// now check if secret matches
 			// you need not send a secret if secret is empty
 			if s.Secret != formResults["secret"] {
-				log.Println("Secrets dont match.")
+				log.Println("Unauthorized.")
 				break
 			}
 			out, _ := exec.Command(s.Shell, s.Location).CombinedOutput()
