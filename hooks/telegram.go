@@ -1,9 +1,10 @@
 package hooks
 
 import (
-	"WebMsg/actions"
-	"WebMsg/utils"
 	"net/http"
+
+	"github.com/IceWreck/HookMsg/actions"
+	"github.com/IceWreck/HookMsg/utils"
 )
 
 // TelegramHook is the endpoint where the user will POST the message they wanna send

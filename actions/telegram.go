@@ -1,9 +1,10 @@
 package actions
 
 import (
-	"WebMsg/utils"
 	"fmt"
 	"log"
+
+	"github.com/IceWreck/HookMsg/utils"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )

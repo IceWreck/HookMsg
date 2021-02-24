@@ -2,3 +2,6 @@
 WebMsg
 config.json
 enabled_scripts.json
+out
+bin
+HookMsg

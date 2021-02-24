@@ -1,8 +1,9 @@
 package hooks
 
 import (
-	"WebMsg/actions"
 	"net/http"
+
+	"github.com/IceWreck/HookMsg/actions"
 
 	"github.com/go-chi/chi"
 )

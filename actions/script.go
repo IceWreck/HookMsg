@@ -1,12 +1,13 @@
 package actions
 
 import (
-	"WebMsg/utils"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/IceWreck/HookMsg/utils"
 )
 
 // Script -
