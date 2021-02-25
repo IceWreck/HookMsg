@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/IceWreck/HookMsg/utils"
-
+	"github.com/IceWreck/HookMsg/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -14,7 +13,7 @@ var TgBot tgbotapi.BotAPI
 // InitializeTG - starts the tg poller
 func InitializeTG() {
 
-	bot, err := tgbotapi.NewBotAPI(utils.Config.TelegramToken)
+	bot, err := tgbotapi.NewBotAPI(config.Config.TelegramToken)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -57,7 +56,7 @@ func SendMsg(subject string, body string) {
 	//msgTemplate := template.New("TelegramMessage")
 	//msgText, err := msgTemplate.Parse("Hello {{.Name}}, your marks are {{.Marks}}%!")
 	msgText := fmt.Sprintf("<b><u>%s</u></b>\n\n\n%s", subject, body)
-	msg := tgbotapi.NewMessage(utils.Config.TelegramUserChatID, msgText)
+	msg := tgbotapi.NewMessage(config.Config.TelegramUserChatID, msgText)
 	msg.ParseMode = "HTML"
 	_, err := TgBot.Send(msg)
 	if err != nil {

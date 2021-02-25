@@ -8,8 +8,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/IceWreck/HookMsg/config"
+
 	"github.com/IceWreck/HookMsg/hooks"
-	"github.com/IceWreck/HookMsg/utils"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -36,8 +37,8 @@ func main() {
 		r.Post("/script/{endpoint}", hooks.ScriptHook)
 	})
 
-	log.Println("Running it at port ", utils.Config.DeploymentPort)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", utils.Config.DeploymentPort), r)
+	log.Println("Running it at port ", config.Config.DeploymentPort)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", config.Config.DeploymentPort), r)
 	if err != nil {
 		log.Println(err)
 	}

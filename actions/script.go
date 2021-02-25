@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/IceWreck/HookMsg/utils"
+	"github.com/IceWreck/HookMsg/config"
 )
 
 // Script -
@@ -23,7 +23,7 @@ func RunScript(formResults map[string]string) {
 
 	// Read enabled_scripts.json
 	var scripts []Script
-	jsonFile, err := os.Open(utils.Config.ScriptsConfig)
+	jsonFile, err := os.Open(config.Config.ScriptsConfig)
 	if err != nil {
 		log.Println("Script config file not found.")
 	} else {
