@@ -17,7 +17,7 @@ import (
 
 func main() {
 	// Initialize Telegram
-	//go actions.InitializeTG()
+	// go actions.InitializeTG()
 
 	// Initialize Router
 	r := chi.NewRouter()
@@ -28,7 +28,7 @@ func main() {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello! Welcome to Anchit's HookMsg Microservice."))
+		w.Write([]byte("Hello! Welcome to Anchit's HookMsg Service."))
 	})
 
 	r.Route("/hooks", func(r chi.Router) {
@@ -37,5 +37,8 @@ func main() {
 	})
 
 	log.Println("Running it at port ", utils.Config.DeploymentPort)
-	http.ListenAndServe(fmt.Sprintf(":%d", utils.Config.DeploymentPort), r)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", utils.Config.DeploymentPort), r)
+	if err != nil {
+		log.Println(err)
+	}
 }
