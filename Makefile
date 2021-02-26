@@ -5,4 +5,4 @@ run-sample:
 	go run ./cmd/sample
 
 build:
-	go build -o ./bin/HookMsg ./cmd/hookmsg
+	go build -o ./bin/HookMsg -tags hooktelegram ./cmd/hookmsg

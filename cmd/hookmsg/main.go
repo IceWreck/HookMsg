@@ -1,15 +1,12 @@
 package main
 
 import (
-	//...
-
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/IceWreck/HookMsg/config"
-
 	"github.com/IceWreck/HookMsg/handlers"
 
 	"github.com/go-chi/chi"
@@ -17,8 +14,6 @@ import (
 )
 
 func main() {
-	// Initialize Telegram
-	// go actions.InitializeTG()
 
 	// Initialize Router
 	r := chi.NewRouter()
@@ -34,7 +29,7 @@ func main() {
 
 	r.Route("/hooks", func(r chi.Router) {
 		r.Post("/script/{endpoint}", handlers.ScriptHook)
-		//r.Post("/telegram", handlers.TelegramHook)
+		// r.Post("/telegram", handlers.TelegramHook)
 		r.Post("/matrix/{channel}", handlers.MatrixHook)
 	})
 

@@ -11,19 +11,13 @@ import (
 // and matrix channel will be a URL parameter
 // api key/secret will be a POST parameter
 func MatrixHook(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	formValues := r.Form
 	// check if channel is in config file
 	channel, exists := config.Config.MatrixChannels[chi.URLParam(r, "channel")]
 	if !exists {
 		renderJSON(w, r, http.StatusBadRequest, map[string]string{"err": "channel does not exist"})
 		return
 	}
-	// assume api key is empty if not provided
-	secret := ""
-	if len(formValues["secret"]) > 0 {
-		secret = formValues["secret"][0]
-	}
+	secret := r.PostFormValue("secret")
 	// verify api key
 	if channel.Key == secret {
 		// send message

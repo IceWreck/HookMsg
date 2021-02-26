@@ -13,19 +13,19 @@ var Config Settings = loadSettings()
 
 // Settings - struct to define settings
 type Settings struct {
-	DeploymentName      string                   `yaml:"deployment_name"`
-	DeploymentPort      int                      `yaml:"deployment_port"`
-	DeploymentURL       string                   `yaml:"deployment_url"`
-	TelegramUserName    string                   `yaml:"tg_user"`
-	TelegramUserChatID  int64                    `yaml:"tg_user_chat_id"`
-	TelegramToken       string                   `yaml:"tg_token"`
-	TelegramWebhookAuth []string                 `yaml:"tg_webhook_auth"`
-	MatrixUserName      string                   `yaml:"matrix_user"`
-	MatrixPassword      string                   `yaml:"matrix_password"`
-	MatrixHomeserver    string                   `yaml:"matrix_homeserver"`
-	MatrixDeviceID      string                   `yaml:"matrix_deviceid"`
-	MatrixChannels      map[string]MatrixChannel `yaml:"matrix_channels"`
-	ScriptsConfig       string                   `yaml:"scripts_config"`
+	DeploymentName     string                   `yaml:"deployment_name"`
+	DeploymentPort     int                      `yaml:"deployment_port"`
+	DeploymentURL      string                   `yaml:"deployment_url"`
+	TelegramUserName   string                   `yaml:"tg_user"`
+	TelegramUserChatID int64                    `yaml:"tg_user_chat_id"`
+	TelegramToken      string                   `yaml:"tg_token"`
+	TelegramKey        []string                 `yaml:"tg_key"`
+	MatrixUserName     string                   `yaml:"matrix_user"`
+	MatrixPassword     string                   `yaml:"matrix_password"`
+	MatrixHomeserver   string                   `yaml:"matrix_homeserver"`
+	MatrixDeviceID     string                   `yaml:"matrix_deviceid"`
+	MatrixChannels     map[string]MatrixChannel `yaml:"matrix_channels"`
+	ScriptsConfig      string                   `yaml:"scripts_config"`
 }
 
 // MatrixChannel has matrix room id and hookmsg API key for that channel
