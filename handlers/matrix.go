@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/IceWreck/HookMsg/actions"
 	"github.com/IceWreck/HookMsg/config"
 	"github.com/go-chi/chi"
 )
@@ -18,9 +19,11 @@ func MatrixHook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	secret := r.PostFormValue("secret")
+	content := r.PostFormValue("content")
 	// verify api key
 	if channel.Key == secret {
 		// send message
+		actions.SendMatrixText(channel.ID, content)
 		renderJSON(w, r, http.StatusOK, map[string]string{"status": "ok"})
 	} else {
 		renderJSON(w, r, http.StatusUnauthorized, map[string]string{"err": "unauthorized"})

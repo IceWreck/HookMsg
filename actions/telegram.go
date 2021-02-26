@@ -11,9 +11,10 @@ import (
 )
 
 var tgBot tgbotapi.BotAPI
+var tgInit = tgInitizer()
 
 // start the tg poller
-func init() {
+func tgInitizer() int {
 	go func() {
 		bot, err := tgbotapi.NewBotAPI(config.Config.TelegramToken)
 		if err != nil {
@@ -24,6 +25,7 @@ func init() {
 		tgBot = *bot
 		tgPoller()
 	}()
+	return 0
 }
 
 func tgPoller() {
