@@ -1,8 +1,8 @@
 run:
-	go run ./cmd/hookmsg
+	go run -tags exclude_tg ./cmd/hookmsg
 
 run-sample:
 	go run ./cmd/sample
 
 build:
-	go build -o ./bin/HookMsg -tags hooktelegram ./cmd/hookmsg
+	go build -o ./bin/HookMsg ./cmd/hookmsg

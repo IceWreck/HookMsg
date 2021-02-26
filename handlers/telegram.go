@@ -1,4 +1,4 @@
-// +build hooktelegram
+// +build !exclude_tg
 
 package handlers
 
