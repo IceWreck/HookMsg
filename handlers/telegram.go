@@ -1,4 +1,4 @@
-package hooks
+package handlers
 
 import (
 	"net/http"
@@ -18,11 +18,12 @@ func TelegramHook(w http.ResponseWriter, r *http.Request) {
 		if password == formValues["secret"][0] {
 			actions.SendMsg(formValues["subject"][0], formValues["content"][0])
 			isAuthorized = true
-			w.Write([]byte("OK"))
+			renderJSON(w, r, http.StatusOK, map[string]string{"status": "ok"})
+			return
 		}
 	}
 	if !isAuthorized {
-		w.Write([]byte("Unauthorized"))
+		renderJSON(w, r, http.StatusUnauthorized, map[string]string{"err": "unauthorized"})
 	}
 
 }

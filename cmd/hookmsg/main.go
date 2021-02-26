@@ -10,7 +10,7 @@ import (
 
 	"github.com/IceWreck/HookMsg/config"
 
-	"github.com/IceWreck/HookMsg/hooks"
+	"github.com/IceWreck/HookMsg/handlers"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -33,11 +33,12 @@ func main() {
 	})
 
 	r.Route("/hooks", func(r chi.Router) {
-		//r.Post("/telegram", hooks.TelegramHook)
-		r.Post("/script/{endpoint}", hooks.ScriptHook)
+		r.Post("/script/{endpoint}", handlers.ScriptHook)
+		//r.Post("/telegram", handlers.TelegramHook)
+		r.Post("/matrix/{channel}", handlers.MatrixHook)
 	})
 
-	log.Println("Running it at port ", config.Config.DeploymentPort)
+	log.Println("Running at Port ", config.Config.DeploymentPort)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", config.Config.DeploymentPort), r)
 	if err != nil {
 		log.Println(err)

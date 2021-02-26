@@ -48,6 +48,5 @@ func loadSettings() Settings {
 	if err != nil {
 		log.Fatal("Error parsing config.yaml")
 	}
-	// fmt.Println(settings)
 	return settings
 }

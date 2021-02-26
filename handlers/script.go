@@ -1,4 +1,4 @@
-package hooks
+package handlers
 
 import (
 	"net/http"
@@ -18,5 +18,5 @@ func ScriptHook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	go actions.RunScript(formResults)
-	w.Write([]byte("OK"))
+	renderJSON(w, r, http.StatusOK, map[string]string{"status": "ok"})
 }

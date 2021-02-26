@@ -1,8 +1,10 @@
 .idea
+.vscode
 WebMsg
 config.json
 enabled_scripts.json
 out
+dump
 bin
 HookMsg
 config.yaml
