@@ -1,11 +1,13 @@
 package actions
 
 import (
+	"bytes"
 	"log"
 	"time"
 
 	"github.com/IceWreck/HookMsg/config"
 	matrix "github.com/matrix-org/gomatrix"
+	"github.com/yuin/goldmark"
 )
 
 var client = clientInit()
@@ -51,12 +53,25 @@ func clientLogin(c *matrix.Client) {
 
 // SendMatrixText - send text message on given matrix channel
 func SendMatrixText(id string, body string) {
-	_, err := client.SendText(id, body)
+	// user will send markdown
+	// body will remail markdown
+	// formattedBody should be converted to html
+	var buf bytes.Buffer
+	if err := goldmark.Convert([]byte(body), &buf); err != nil {
+		log.Println(err)
+		return
+	}
+	_, err := client.SendFormattedText(id, body, buf.String())
 	if err != nil {
 		log.Println(err)
 		// retry logging in
 		clientLogin(client)
 		// retry sending
-		client.SendText(id, body)
+		client.SendFormattedText(id, body, body)
 	}
+}
+
+// matrixCommandExecutor - execute commands sent over matrix
+func matrixCommandExecutor() {
+
 }
