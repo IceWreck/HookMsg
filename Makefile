@@ -1,19 +1,35 @@
-# Build Types
-# a) Hooks only
-# b) Hooks and Matrix
-# c) Hooks, Matrix and Telegram
+# Build Featuresets:
+# a) Scripts only
+# b) Scripts and Matrix
+# c) Scripts, Matrix and Telegram
 
+# feature set b
 run:
-	go run -tags exclude_tg ./cmd/hookmsg
+	go run -tags matrix,script ./cmd/hookmsg
 
 run-sample:
-	go run ./cmd/sample
+	go run -tags matrix,script ./cmd/sample
 
 run-newfilter:
-	go run ./cmd/newfilter
+	go run -tags matrix,script ./cmd/newfilter
 
+# feature set c
 build:
-	go build -o ./bin/HookMsgComplete ./cmd/hookmsg
+	go build \
+		-tags matrix,telegram,script \
+		-o ./bin/HookMsgComplete ./cmd/hookmsg
+
+# feature set a
+build-a:
+	go build \
+		-tags script \
+		-o ./bin/HookMsg_A ./cmd/hookmsg
+
+# feature set b
+build-b:
+	go build \
+		-tags script,matrix \
+		-o ./bin/HookMsg_A ./cmd/hookmsg
 
 
 # required when you need to build with older glibc (for older servers)

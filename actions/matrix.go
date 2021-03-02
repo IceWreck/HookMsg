@@ -1,3 +1,5 @@
+// +build matrix
+
 package actions
 
 import (

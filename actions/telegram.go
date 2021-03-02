@@ -1,4 +1,4 @@
-// +build !exclude_tg
+// +build telegram
 
 package actions
 

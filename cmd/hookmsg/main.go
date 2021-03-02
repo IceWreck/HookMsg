@@ -7,11 +7,12 @@ import (
 	"time"
 
 	"github.com/IceWreck/HookMsg/config"
-	"github.com/IceWreck/HookMsg/handlers"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
+
+var routerMap map[string]http.Handler = make(map[string]http.Handler)
 
 func main() {
 
@@ -27,11 +28,9 @@ func main() {
 		w.Write([]byte("Hello! Welcome to Anchit's HookMsg Service."))
 	})
 
-	r.Route("/hooks", func(r chi.Router) {
-		r.Post("/script/{endpoint}", handlers.ScriptHook)
-		// r.Post("/telegram", handlers.TelegramHook)
-		r.Post("/matrix/{channel}", handlers.MatrixHook)
-	})
+	// this is a clever trick (if i say so myself) to build only the router
+	// which is needed for functionality mentioned in build tags (read Makefile)
+	r.Mount("/hooks", routerMap["r"])
 
 	log.Println("Running at Port ", config.Config.DeploymentPort)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", config.Config.DeploymentPort), r)

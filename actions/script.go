@@ -1,3 +1,5 @@
+// +build script
+
 package actions
 
 import (
