@@ -19,15 +19,41 @@ func matrixHook(app *config.Application) http.HandlerFunc {
 			errorResponse(app, w, r, http.StatusBadRequest, "channel does not exist")
 			return
 		}
+		quit := false
+		var secret, content string
 
-		err := r.ParseForm()
-		if err != nil {
-			app.Logger.Error().Err(err).Str("channel", channel.ID).
-				Msg("Error parsing url-encoded form for matrix hook")
+		// for compatibility reasons we need to support both json and url-encoded bodies
+
+		if hasContentType(r, "application/json") {
+			var respJSON map[string]string
+			err := readJSON(app, w, r, &respJSON)
+			if err != nil {
+				app.Logger.Error().Err(err).Str("channel", channel.ID).
+					Msg("Error parsing JSON for matrix hook")
+				errorResponse(app, w, r, http.StatusUnprocessableEntity, "invalid JSON")
+				quit = true
+				return
+			}
+			secret = respJSON["secret"]
+			content = respJSON["content"]
+		} else {
+			err := r.ParseForm()
+			if err != nil {
+				app.Logger.Error().Err(err).Str("channel", channel.ID).
+					Msg("Error parsing url-encoded form for matrix hook")
+				errorResponse(app, w, r, http.StatusUnprocessableEntity, "invalid URL encoded body")
+				quit = true
+				return
+			}
+
+			secret = r.PostFormValue("secret")
+			content = r.PostFormValue("content")
 		}
 
-		secret := r.PostFormValue("secret")
-		content := r.PostFormValue("content")
+		if quit {
+			return
+		}
+
 		// verify api key
 		if channel.Key == secret {
 			// send message
