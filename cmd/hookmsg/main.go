@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/IceWreck/HookMsg/actions"
 	"github.com/IceWreck/HookMsg/config"
@@ -12,11 +13,16 @@ import (
 )
 
 func main() {
-
 	app := &config.Application{
-		Config: config.LoadConfig(),
-		Logger: zerolog.New(os.Stderr).With().Logger(),
+		Logger: zerolog.New(
+			zerolog.ConsoleWriter{
+				Out:        os.Stdout,
+				TimeFormat: time.RFC822,
+			},
+		).With().Timestamp().Logger(),
 	}
+
+	app.Config = config.LoadConfig(app)
 
 	app.Logger.Info().
 		Bool("script_hook", true).

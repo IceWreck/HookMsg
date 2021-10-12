@@ -12,7 +12,7 @@ func healthCheck(app *config.Application) http.HandlerFunc {
 			"status": "available",
 			"system_info": map[string]string{
 				"environment": "dev",
-				"version":     "1.2",
+				"version":     config.Version,
 			},
 		}
 		err := writeJSON(app, w, http.StatusOK, data, nil)
