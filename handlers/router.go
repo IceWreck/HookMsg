@@ -13,8 +13,8 @@ func Routes(app *config.Application) http.Handler {
 	r := chi.NewRouter()
 
 	// custom error handlers
-	// r.NotFound(app.notFoundResponse)
-	// r.MethodNotAllowed(app.methodNotAllowedResponse)
+	r.NotFound(notFoundResponse(app))
+	r.MethodNotAllowed(methodNotAllowedResponse(app))
 
 	// middleware
 	r.Use(middleware.RequestID)

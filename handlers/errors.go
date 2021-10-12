@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/IceWreck/HookMsg/config"
@@ -35,4 +36,34 @@ func serverErrorResponse(app *config.Application, w http.ResponseWriter, r *http
 	logError(app, r, err)
 	message := "the server encountered a problem and could not process your request"
 	errorResponse(app, w, r, http.StatusInternalServerError, message)
+}
+
+// The notFoundResponse() method will be used to send a 404 Not Found status code and
+// JSON response to the client.
+func notFoundResponse(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		message := "the requested resource could not be found"
+		errorResponse(app, w, r, http.StatusNotFound, message)
+	}
+}
+
+// The methodNotAllowedResponse() method will be used to send a 405 Method Not Allowed
+// status code and JSON response to the client.
+func methodNotAllowedResponse(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		message := fmt.Sprintf("the %s method is not supported for this resource", r.Method)
+		errorResponse(app, w, r, http.StatusMethodNotAllowed, message)
+	}
+}
+
+// The badRequestResponse() method will be used to send a 400 Bad request status code
+// and JSON response to the client.
+func badRequestResponse(app *config.Application, w http.ResponseWriter, r *http.Request, err error) {
+	errorResponse(app, w, r, http.StatusBadRequest, err.Error())
+}
+
+// Note that the errors parameter here has the type map[string]string, which is exactly
+// the same as the errors map contained in our Validator type.
+func failedValidationResponse(app *config.Application, w http.ResponseWriter, r *http.Request, errors map[string]string) {
+	errorResponse(app, w, r, http.StatusUnprocessableEntity, errors)
 }

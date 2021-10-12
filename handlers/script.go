@@ -20,6 +20,6 @@ func scriptHook(app *config.Application) http.HandlerFunc {
 		}
 
 		go actions.RunScript(app, formResults)
-		renderJSON(w, r, http.StatusOK, map[string]string{"status": "ok"})
+		writeJSON(app, w, http.StatusOK, map[string]string{"status": "ok"}, nil)
 	}
 }

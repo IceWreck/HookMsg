@@ -20,12 +20,12 @@ func telegramHook(app *config.Application) http.HandlerFunc {
 			if password == secret {
 				actions.SendTelegramText(app, subject, content)
 				isAuthorized = true
-				renderJSON(w, r, http.StatusOK, map[string]string{"status": "ok"})
+				writeJSON(app, w, http.StatusOK, map[string]string{"status": "ok"}, nil)
 				return
 			}
 		}
 		if !isAuthorized {
-			renderJSON(w, r, http.StatusUnauthorized, map[string]string{"err": "unauthorized"})
+			errorResponse(app, w, r, http.StatusUnauthorized, "unauthorized")
 		}
 	}
 }
