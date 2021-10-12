@@ -2,8 +2,7 @@ package actions
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"log"
+	"io"
 	"os"
 	"os/exec"
 
@@ -19,32 +18,35 @@ type Script struct {
 }
 
 // RunScript executes script of type Script in defined shell
-func RunScript(formResults map[string]string) {
+func RunScript(app *config.Application, formResults map[string]string) {
 
 	// Read enabled_scripts.json
 	var scripts []Script
-	jsonFile, err := os.Open(config.Config.ScriptsConfig)
+	jsonFile, err := os.Open(app.Config.ScriptsConfig)
 	if err != nil {
-		log.Println("Script config file not found.")
+		app.Logger.Warn().Msg("Script config file not found")
+		return
 	} else {
-		log.Println("Loaded script config file.")
+		app.Logger.Info().Msg("Loaded script config file")
+		defer jsonFile.Close()
 	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	byteValue, _ := io.ReadAll(jsonFile)
 	json.Unmarshal(byteValue, &scripts)
 
 	// iterate over scripts in json file and find one with matching credentials
 	for _, s := range scripts {
-		log.Println(s)
+		app.Logger.Debug().Str("current_script", s.Endpoint).Msg("Finding script....")
 		if s.Endpoint == formResults["endpoint"] {
+			app.Logger.Debug().Str("current_script", s.Endpoint).Msg("Found script")
 			// now check if secret matches
 			// you need not send a secret if secret is empty
 			if s.Secret != formResults["secret"] {
-				log.Println("Unauthorized.")
+				app.Logger.Warn().Str("current_script", s.Endpoint).Msg("Unauthorized")
 				break
 			}
 			out, _ := exec.Command(s.Shell, s.Location).CombinedOutput()
-			log.Print(string(out))
+			app.Logger.Debug().Str("current_script", s.Endpoint).Str("output", string(out)).Msg("")
 			break
 		}
 

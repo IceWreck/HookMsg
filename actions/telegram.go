@@ -2,37 +2,31 @@ package actions
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/IceWreck/HookMsg/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-var tgBot tgbotapi.BotAPI
-var tgInit = tgInitizer()
-
 // start the tg poller
-func tgInitizer() int {
-	go func() {
-		bot, err := tgbotapi.NewBotAPI(config.Config.TelegramToken)
-		if err != nil {
-			log.Panic(err)
-		}
-		bot.Debug = false
-		log.Printf("Authorized on account %s", bot.Self.UserName)
-		tgBot = *bot
-		tgPoller()
-	}()
-	return 0
+func TelegramClientInit(app *config.Application) *tgbotapi.BotAPI {
+	bot, err := tgbotapi.NewBotAPI(app.Config.TelegramToken)
+	if err != nil {
+		app.Logger.Panic().Err(err).Msg("Error connecting to Telegram")
+	}
+	bot.Debug = false
+	app.Logger.Info().Str("account", bot.Self.UserName).Msg("Telegram authorized")
+	go tgPoller(app, bot)
+	return bot
 }
 
-func tgPoller() {
+func tgPoller(app *config.Application, bot *tgbotapi.BotAPI) {
+	// TODO: repace this with a webhook
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates, err := tgBot.GetUpdatesChan(u)
+	updates, err := bot.GetUpdatesChan(u)
 	if err != nil {
-		log.Panic(err)
+		app.Logger.Panic().Err(err).Msg("Error connecting to Telegram")
 	}
 
 	for update := range updates {
@@ -47,22 +41,22 @@ func tgPoller() {
 		)
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
 		msg.ReplyToMessageID = update.Message.MessageID
-		_, err := tgBot.Send(msg)
+		_, err := bot.Send(msg)
 		if err != nil {
-			log.Print(err)
+			app.Logger.Error().Err(err).Msg("Error sending Telegram message")
 		}
 	}
 }
 
-// SendMsg - sent plaintext message
-func SendMsg(subject string, body string) {
+// SendTelegramText - sent plaintext message
+func SendTelegramText(app *config.Application, subject string, body string) {
 	//msgTemplate := template.New("TelegramMessage")
 	//msgText, err := msgTemplate.Parse("Hello {{.Name}}, your marks are {{.Marks}}%!")
 	msgText := fmt.Sprintf("<b><u>%s</u></b>\n\n\n%s", subject, body)
-	msg := tgbotapi.NewMessage(config.Config.TelegramUserChatID, msgText)
+	msg := tgbotapi.NewMessage(app.Config.TelegramUserChatID, msgText)
 	msg.ParseMode = "HTML"
-	_, err := tgBot.Send(msg)
+	_, err := app.TelegramClient.Send(msg)
 	if err != nil {
-		log.Print(err)
+		app.Logger.Error().Err(err).Msg("Error sending Telegram message")
 	}
 }

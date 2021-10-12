@@ -2,39 +2,42 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"time"
+	"os"
 
+	"github.com/IceWreck/HookMsg/actions"
 	"github.com/IceWreck/HookMsg/config"
-
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/IceWreck/HookMsg/handlers"
+	"github.com/rs/zerolog"
 )
-
-var routerMap map[string]http.Handler = make(map[string]http.Handler)
 
 func main() {
 
+	app := &config.Application{
+		Config: config.LoadConfig(),
+		Logger: zerolog.New(os.Stderr).With().Logger(),
+	}
+
+	app.Logger.Info().
+		Bool("script_hook", true).
+		Bool("tg_hook", app.Config.TelegramEnabled).
+		Bool("matrix_hook", app.Config.MatrixEnabled).
+		Msg("")
+
+	if app.Config.TelegramEnabled {
+		app.TelegramClient = actions.TelegramClientInit(app) // Login to Telegram
+	}
+
+	if app.Config.MatrixEnabled {
+		app.MatrixClient = actions.MatrixClientInit(app) // Login to Matrix
+	}
+
 	// Initialize Router
-	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(60 * time.Second))
+	r := handlers.Routes(app)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello! Welcome to Anchit's HookMsg Service."))
-	})
-
-	// this is a clever trick (if i say so myself) to build only the router
-	// which is needed for functionality mentioned in build tags (read Makefile)
-	r.Mount("/hooks", routerMap["r"])
-
-	log.Println("Running at Port ", config.Config.DeploymentPort)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", config.Config.DeploymentPort), r)
+	app.Logger.Info().Int("port", app.Config.DeploymentPort).Msg("HookMsg Running")
+	err := http.ListenAndServe(fmt.Sprintf(":%d", app.Config.DeploymentPort), r)
 	if err != nil {
-		log.Println(err)
+		app.Logger.Err(err).Msg("")
 	}
 }

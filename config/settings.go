@@ -2,24 +2,24 @@ package config
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
+
+	"github.com/rs/zerolog/log"
 
 	"gopkg.in/yaml.v3"
 )
 
-// Config - settings which you load from your JSON
-var Config Settings = loadSettings()
-
 // Settings - struct to define settings
-type Settings struct {
+type Config struct {
 	DeploymentName       string                   `yaml:"deployment_name"`
 	DeploymentPort       int                      `yaml:"deployment_port"`
 	DeploymentURL        string                   `yaml:"deployment_url"`
+	TelegramEnabled      bool                     `yaml:"tg_enabled"`
 	TelegramUserName     string                   `yaml:"tg_user"`
 	TelegramUserChatID   int64                    `yaml:"tg_user_chat_id"`
 	TelegramToken        string                   `yaml:"tg_token"`
 	TelegramKey          []string                 `yaml:"tg_key"`
+	MatrixEnabled        bool                     `yaml:"matrix_enabled"`
 	MatrixUserName       string                   `yaml:"matrix_user"`
 	MatrixPassword       string                   `yaml:"matrix_password"`
 	MatrixHomeserver     string                   `yaml:"matrix_homeserver"`
@@ -38,18 +38,18 @@ type MatrixChannel struct {
 	Key string `yaml:"key"`
 }
 
-func loadSettings() Settings {
-	var settings Settings
+func LoadConfig() Config {
+	var settings Config
 	yamlFile, err := os.Open("config.yaml")
 	if err != nil {
-		log.Fatal("Config file not found.")
+		log.Fatal().Msg("Config file not found")
 	}
 	defer yamlFile.Close()
-	log.Println("Loaded config.yaml")
+	log.Info().Msg("Loaded config.yaml")
 	byteValue, _ := ioutil.ReadAll(yamlFile)
 	err = yaml.Unmarshal(byteValue, &settings)
 	if err != nil {
-		log.Fatal("Error parsing config.yaml")
+		log.Fatal().Msg("Error parsing config.yaml")
 	}
 	return settings
 }

@@ -2,20 +2,18 @@ package actions
 
 import (
 	"bytes"
-	"log"
 	"time"
 
 	"github.com/IceWreck/HookMsg/config"
-	matrix "github.com/matrix-org/gomatrix"
+	"github.com/matrix-org/gomatrix"
 	"github.com/yuin/goldmark"
 )
 
-var client = clientInit()
-
-func clientInit() *matrix.Client {
+func MatrixClientInit(app *config.Application) *gomatrix.Client {
 	// login initially
-	c, _ := matrix.NewClient(config.Config.MatrixHomeserver, "", "")
-	clientLogin(c)
+	app.Logger.Info().Msg("Logging into Matrix")
+	c, _ := gomatrix.NewClient(app.Config.MatrixHomeserver, "", "")
+	clientLogin(app, c)
 
 	// start ticker to re-login every week
 	ticker := time.NewTicker(7 * 24 * time.Hour)
@@ -27,7 +25,8 @@ func clientInit() *matrix.Client {
 			case <-done:
 				return
 			case _ = <-ticker.C:
-				clientLogin(c)
+				app.Logger.Info().Msg("Attempting scheduled matrix relogin")
+				clientLogin(app, c)
 			}
 		}
 	}()
@@ -35,38 +34,38 @@ func clientInit() *matrix.Client {
 	return c
 }
 
-func clientLogin(c *matrix.Client) {
+func clientLogin(app *config.Application, c *gomatrix.Client) {
 	// TODO: while probably not required but put this in a mutex just in case
-	resp, err := c.Login(&matrix.ReqLogin{
+	resp, err := c.Login(&gomatrix.ReqLogin{
 		Type:     "m.login.password",
-		User:     config.Config.MatrixUserName,
-		Password: config.Config.MatrixPassword,
-		DeviceID: config.Config.MatrixDeviceID,
+		User:     app.Config.MatrixUserName,
+		Password: app.Config.MatrixPassword,
+		DeviceID: app.Config.MatrixDeviceID,
 	})
 	if err != nil {
-		log.Println("Error logging in to matrix", err)
+		app.Logger.Error().Err(err).Msg("Error logging in to matrix")
 	} else {
-		log.Println("Logged into matrix")
+		app.Logger.Info().Msg("Logged into matrix")
 	}
 	c.SetCredentials(resp.UserID, resp.AccessToken)
 }
 
 // SendMatrixText - send text message on given matrix channel
-func SendMatrixText(id string, body string) {
+func SendMatrixText(app *config.Application, id string, body string) {
 	// user will send markdown
 	// body will remail markdown
 	// formattedBody should be converted to html
 	var buf bytes.Buffer
 	if err := goldmark.Convert([]byte(body), &buf); err != nil {
-		log.Println(err)
+		app.Logger.Error().Err(err).Msg("Error converting markdown to html")
 		return
 	}
-	_, err := client.SendFormattedText(id, body, buf.String())
+	_, err := app.MatrixClient.SendFormattedText(id, body, buf.String())
 	if err != nil {
-		log.Println(err)
+		app.Logger.Error().Err(err).Msg("")
 		// retry logging in
-		clientLogin(client)
+		clientLogin(app, app.MatrixClient)
 		// retry sending
-		client.SendFormattedText(id, body, body)
+		app.MatrixClient.SendFormattedText(id, body, body)
 	}
 }

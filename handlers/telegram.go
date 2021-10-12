@@ -7,24 +7,25 @@ import (
 	"github.com/IceWreck/HookMsg/config"
 )
 
-// TelegramHook is the endpoint where the user will POST the message they wanna send
-func TelegramHook(w http.ResponseWriter, r *http.Request) {
-	content := r.PostFormValue("content")
-	subject := r.PostFormValue("subject")
-	secret := r.PostFormValue("secret")
+// telegramHook is the endpoint where the user will POST the message they wanna send
+func telegramHook(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		content := r.PostFormValue("content")
+		subject := r.PostFormValue("subject")
+		secret := r.PostFormValue("secret")
 
-	// send message if secret is in config file
-	isAuthorized := false
-	for _, password := range config.Config.TelegramKey {
-		if password == secret {
-			actions.SendMsg(subject, content)
-			isAuthorized = true
-			renderJSON(w, r, http.StatusOK, map[string]string{"status": "ok"})
-			return
+		// send message if secret is in config file
+		isAuthorized := false
+		for _, password := range app.Config.TelegramKey {
+			if password == secret {
+				actions.SendTelegramText(app, subject, content)
+				isAuthorized = true
+				renderJSON(w, r, http.StatusOK, map[string]string{"status": "ok"})
+				return
+			}
+		}
+		if !isAuthorized {
+			renderJSON(w, r, http.StatusUnauthorized, map[string]string{"err": "unauthorized"})
 		}
 	}
-	if !isAuthorized {
-		renderJSON(w, r, http.StatusUnauthorized, map[string]string{"err": "unauthorized"})
-	}
-
 }
