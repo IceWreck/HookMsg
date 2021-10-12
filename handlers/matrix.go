@@ -1,8 +1,7 @@
-// +build matrix
-
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/IceWreck/HookMsg/actions"
@@ -22,6 +21,7 @@ func MatrixHook(w http.ResponseWriter, r *http.Request) {
 	}
 	secret := r.PostFormValue("secret")
 	content := r.PostFormValue("content")
+	fmt.Println("content:", content)
 	// verify api key
 	if channel.Key == secret {
 		// send message

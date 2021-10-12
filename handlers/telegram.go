@@ -1,5 +1,3 @@
-// +build telegram
-
 package handlers
 
 import (

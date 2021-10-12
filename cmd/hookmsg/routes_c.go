@@ -1,5 +1,3 @@
-// +build matrix,telegram,script
-
 package main
 
 import (

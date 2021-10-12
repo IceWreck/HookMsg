@@ -1,5 +1,3 @@
-// +build script
-
 package handlers
 
 import (

@@ -1,5 +1,3 @@
-// +build telegram
-
 package actions
 
 import (

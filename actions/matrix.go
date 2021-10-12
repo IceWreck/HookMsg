@@ -1,5 +1,3 @@
-// +build matrix
-
 package actions
 
 import (
@@ -71,9 +69,4 @@ func SendMatrixText(id string, body string) {
 		// retry sending
 		client.SendFormattedText(id, body, body)
 	}
-}
-
-// matrixCommandExecutor - execute commands sent over matrix
-func matrixCommandExecutor() {
-
 }
