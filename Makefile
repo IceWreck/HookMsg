@@ -2,7 +2,7 @@ run:
 	go run ./cmd/hookmsg
 
 build:
-	go build \
+	CGO_ENABLED=0 go build \
 		-o ./bin/HookMsgComplete ./cmd/hookmsg
 
 # required when you need to build with older glibc (for older servers)
