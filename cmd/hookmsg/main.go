@@ -22,6 +22,8 @@ func main() {
 		).With().Timestamp().Logger(),
 	}
 
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
 	app.Config = config.LoadConfig(app)
 
 	app.Logger.Info().

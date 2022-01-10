@@ -18,7 +18,7 @@ type Script struct {
 }
 
 // RunScript executes script of type Script in defined shell
-func RunScript(app *config.Application, formResults map[string]string) {
+func RunScript(app *config.Application, endpoint string, secret string, webhookData map[string]interface{}) {
 
 	// Read enabled_scripts.json
 	var scripts []Script
@@ -37,15 +37,21 @@ func RunScript(app *config.Application, formResults map[string]string) {
 	// iterate over scripts in json file and find one with matching credentials
 	for _, s := range scripts {
 		app.Logger.Debug().Str("current_script", s.Endpoint).Msg("Finding script....")
-		if s.Endpoint == formResults["endpoint"] {
+		if s.Endpoint == endpoint {
 			app.Logger.Debug().Str("current_script", s.Endpoint).Msg("Found script")
 			// now check if secret matches
 			// you need not send a secret if secret is empty
-			if s.Secret != formResults["secret"] {
+			if s.Secret != secret {
 				app.Logger.Warn().Str("current_script", s.Endpoint).Msg("Unauthorized")
 				break
 			}
-			out, _ := exec.Command(s.Shell, s.Location).CombinedOutput()
+
+			// Everything checks out. Execute script.
+			webhookDataJSON, _ := json.Marshal(webhookData)
+
+			//app.Logger.Debug().Interface("webhookData", string(webhookDataJSON)).Msg("")
+
+			out, _ := exec.Command(s.Shell, s.Location, string(webhookDataJSON)).CombinedOutput()
 			app.Logger.Debug().Str("current_script", s.Endpoint).Str("output", string(out)).Msg("")
 			break
 		}

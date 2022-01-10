@@ -31,7 +31,7 @@ func Routes(app *config.Application) http.Handler {
 	r.Get("/healthcheck", healthCheck(app))
 
 	r.Route("/hooks", func(r chi.Router) {
-		r.Post("/script/{endpoint}", scriptHook(app))
+		r.Handle("/script/{endpoint}", scriptHook(app))
 
 		if app.Config.TelegramEnabled {
 			r.Post("/telegram", telegramHook(app))

@@ -10,7 +10,8 @@ import (
 
 // matrixHook is the endpoint where the user will POST the message
 // and matrix channel will be a URL parameter
-// api key/secret will be a POST parameter
+// api key/secret and content can be url-encoded POST/GET form parameters
+// they can also be JSON encoded and sent in the POST body
 func matrixHook(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// check if channel is in config file
