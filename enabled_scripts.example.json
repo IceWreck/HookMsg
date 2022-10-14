@@ -1,0 +1,14 @@
+[
+  {
+    "shell": "/bin/bash",
+    "location": "/home/example/Files/Scripts/HookMsg/newreleases.sh",
+    "endpoint": "newreleases",
+    "secret": "key-1"
+  },
+  {
+    "shell": "/usr/bin/python3",
+    "location": "/home/example/Development/HookMsg/dump/test.sh",
+    "endpoint": "test",
+    "secret": "key-2"
+  }
+]

@@ -1,0 +1,49 @@
+# HookMsg Config
+# Its not necessary to fill in all config entries. Just disable that feature instead.
+
+# Global
+deployment_name: "localhost-dev"
+deployment_url: "localhost:8009" # final public url ex: hook.example.com
+deployment_port: 8009
+
+# Email
+
+# Telegram
+tg_enabled: false # enable telegram hook
+tg_user: "" # your telegram username
+tg_user_chat_id: 0000000 # your user's chatid
+tg_bot_user: "" # your bot's username
+tg_token: "" # api token from botfather
+tg_key: [
+  "key-1",
+  "key-2"
+] # secret keys that are required to send messages to tg
+
+# Matrix
+matrix_enabled: true # enable matrix hook
+matrix_user: "@hookmsg:chat.example.com" # create a bot user on your homeserver
+matrix_password: "example" # password for said bot user
+matrix_homeserver: "https://chat.example.com" # your homeserver base url
+matrix_deviceid: "hookmsg-servername" # unique identifier for a hookmsg instance
+matrix_channels:
+# Mapping
+# Channel Name: {id: Internal Room ID, key: HookMsg API key for that channel}
+
+# Channel: Script Reports
+"script-reports":
+  id: "!gibberish:chat.example.com"
+  key: "api-key-1"
+
+# Channel: Security Info
+"security-info":
+  id: "!morerandomstuff:chat.example.com"
+  key: "api-key-1"
+
+matrix_terminal: "!mt:chat.example.com" # matrix room which will execute commands on hookmsg server
+matrix_terminal_user: "@randomuser:chat.example.com" # matrix user who is allowed to execute terminal commands
+# matrix_terminal_user: ""
+matrix_terminal_filter: "4" # matrix filter (fill the fields above then run NewFilter to obtain this)
+
+# Scripts Config
+scripts_config: "./enabled_scripts.example.json"
+
