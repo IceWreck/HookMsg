@@ -4,16 +4,21 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/IceWreck/HookMsg/config"
 	"github.com/matrix-org/gomatrix"
+	"github.com/rs/zerolog/log"
 	"github.com/yuin/goldmark"
 )
 
-func MatrixClientInit(app *config.Application) *gomatrix.Client {
+func (svc *Service) initMatrixClient() {
+	// create client
+	c, err := gomatrix.NewClient(svc.config.MatrixHomeserver, "", "")
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error creating matrix client")
+	}
+	svc.matrixClient = c
+
 	// login initially
-	app.Logger.Info().Msg("Logging into Matrix")
-	c, _ := gomatrix.NewClient(app.Config.MatrixHomeserver, "", "")
-	clientLogin(app, c)
+	svc.matrixClientLogin()
 
 	// start ticker to re-login every week
 	ticker := time.NewTicker(7 * 24 * time.Hour)
@@ -25,47 +30,46 @@ func MatrixClientInit(app *config.Application) *gomatrix.Client {
 			case <-done:
 				return
 			case _ = <-ticker.C:
-				app.Logger.Info().Msg("Attempting scheduled matrix relogin")
-				clientLogin(app, c)
+				log.Info().Msg("Attempting scheduled matrix relogin")
+				svc.matrixClientLogin()
 			}
 		}
 	}()
-
-	return c
 }
 
-func clientLogin(app *config.Application, c *gomatrix.Client) {
+func (svc *Service) matrixClientLogin() {
 	// TODO: while probably not required but put this in a mutex just in case
-	resp, err := c.Login(&gomatrix.ReqLogin{
+	log.Info().Msg("Logging into Matrix")
+	resp, err := svc.matrixClient.Login(&gomatrix.ReqLogin{
 		Type:     "m.login.password",
-		User:     app.Config.MatrixUserName,
-		Password: app.Config.MatrixPassword,
-		DeviceID: app.Config.MatrixDeviceID,
+		User:     svc.config.MatrixUserName,
+		Password: svc.config.MatrixPassword,
+		DeviceID: svc.config.MatrixDeviceID,
 	})
 	if err != nil {
-		app.Logger.Error().Err(err).Msg("Error logging in to matrix")
-	} else {
-		app.Logger.Info().Msg("Logged into matrix")
+		log.Error().Err(err).Msg("Error logging in to matrix")
 	}
-	c.SetCredentials(resp.UserID, resp.AccessToken)
+	svc.matrixClient.SetCredentials(resp.UserID, resp.AccessToken)
+	log.Info().Msg("Logged into matrix")
 }
 
-// SendMatrixText - send text message on given matrix channel
-func SendMatrixText(app *config.Application, id string, body string) {
+// SendMatrixText sends a text message on given matrix channel.
+func (svc *Service) SendMatrixText(id string, body string) {
+	if svc.matrixClient == nil {
+		log.Error().Msg("Cannot send matrix text, client has not been initialized")
+		return
+	}
+
 	// user will send markdown
-	// body will remail markdown
+	// body will remain markdown
 	// formattedBody should be converted to html
 	var buf bytes.Buffer
 	if err := goldmark.Convert([]byte(body), &buf); err != nil {
-		app.Logger.Error().Err(err).Msg("Error converting markdown to html")
+		log.Error().Err(err).Msg("Error converting markdown to html")
 		return
 	}
-	_, err := app.MatrixClient.SendFormattedText(id, body, buf.String())
+	_, err := svc.matrixClient.SendFormattedText(id, body, buf.String())
 	if err != nil {
-		app.Logger.Error().Err(err).Msg("")
-		// retry logging in
-		clientLogin(app, app.MatrixClient)
-		// retry sending
-		app.MatrixClient.SendFormattedText(id, body, body)
+		log.Error().Err(err).Msg("Error sending matrix text")
 	}
 }
