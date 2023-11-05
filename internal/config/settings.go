@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 )
 
@@ -36,18 +37,18 @@ type MatrixChannel struct {
 	Key string `yaml:"key"`
 }
 
-func LoadConfig(app *Application) Config {
+func LoadConfig() Config {
 	var settings Config
 	yamlFile, err := os.Open("config.yaml")
 	if err != nil {
-		app.Logger.Fatal().Msg("Config file not found")
+		log.Fatal().Msg("Config file not found")
 	}
 	defer yamlFile.Close()
-	app.Logger.Info().Msg("Loaded config.yaml")
+	log.Info().Msg("Loaded config.yaml")
 	byteValue, _ := io.ReadAll(yamlFile)
 	err = yaml.Unmarshal(byteValue, &settings)
 	if err != nil {
-		app.Logger.Fatal().Msg("Error parsing config.yaml")
+		log.Fatal().Msg("Error parsing config.yaml")
 	}
 	return settings
 }
