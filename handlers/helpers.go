@@ -8,12 +8,10 @@ import (
 	"mime"
 	"net/http"
 	"strings"
-
-	"github.com/IceWreck/HookMsg/config"
 )
 
 // The writeJSON() method will render your data structure as a JSON object with relevant headers.
-func writeJSON(app *config.Application, w http.ResponseWriter, status int, data interface{}, headers http.Header) error {
+func (app *Application) writeJSON(w http.ResponseWriter, status int, data interface{}, headers http.Header) error {
 	// js, err := json.MarshalIndent(data, "", "\t")
 	js, err := json.Marshal(data)
 	if err != nil {
@@ -30,7 +28,7 @@ func writeJSON(app *config.Application, w http.ResponseWriter, status int, data 
 }
 
 // The readJSON() method will parse JSON from request body and save it to dst struct.
-func readJSON(app *config.Application, w http.ResponseWriter, r *http.Request, dst interface{}) error {
+func (app *Application) readJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	// Decode the request body into the target destination.
 	err := json.NewDecoder(r.Body).Decode(dst)
 	if err != nil {
@@ -79,7 +77,7 @@ func readJSON(app *config.Application, w http.ResponseWriter, r *http.Request, d
 
 // Determine whether the request `content-type` includes a
 // server-acceptable mime-type
-func hasContentType(r *http.Request, mimetype string) bool {
+func (app *Application) hasContentType(r *http.Request, mimetype string) bool {
 	contentType := r.Header.Get("content-type")
 	if contentType == "" {
 		return mimetype == "application/octet-stream"

@@ -4,17 +4,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/IceWreck/HookMsg/config"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
 
-func Routes(app *config.Application) http.Handler {
+func (app *Application) routes() http.Handler {
 	r := chi.NewRouter()
 
 	// custom error handlers
-	r.NotFound(notFoundResponse(app))
-	r.MethodNotAllowed(methodNotAllowedResponse(app))
+	r.NotFound(app.notFoundResponse)
+	r.MethodNotAllowed(app.methodNotAllowedResponse)
 
 	// middleware
 	r.Use(middleware.RequestID)
@@ -28,17 +27,18 @@ func Routes(app *config.Application) http.Handler {
 		w.Write([]byte("Hello! Welcome to Anchit's HookMsg Service."))
 	})
 
-	r.Get("/healthcheck", healthCheck(app))
+	r.Get("/healthcheck", app.healthCheck)
 
 	r.Route("/hooks", func(r chi.Router) {
-		r.Handle("/script/{endpoint}", scriptHook(app))
+		r.Get("/script/{endpoint}", app.scriptHook)
+		r.Post("/script/{endpoint}", app.scriptHook)
 
-		if app.Config.TelegramEnabled {
-			r.Post("/telegram", telegramHook(app))
+		if app.config.TelegramEnabled {
+			r.Post("/telegram", app.telegramHook)
 		}
 
-		if app.Config.MatrixEnabled {
-			r.Post("/matrix/{channel}", matrixHook(app))
+		if app.config.MatrixEnabled {
+			r.Post("/matrix/{channel}", app.matrixHook)
 		}
 
 	})

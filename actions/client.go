@@ -1,7 +1,7 @@
 package actions
 
 import (
-	"github.com/IceWreck/HookMsg/config"
+	"github.com/IceWreck/HookMsg/internal/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/matrix-org/gomatrix"
 )

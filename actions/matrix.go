@@ -18,7 +18,10 @@ func (svc *Service) initMatrixClient() {
 	svc.matrixClient = c
 
 	// login initially
-	svc.matrixClientLogin()
+	err = svc.matrixClientLogin()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error during initial matrix login")
+	}
 
 	// start ticker to re-login every week
 	ticker := time.NewTicker(7 * 24 * time.Hour)
@@ -31,13 +34,14 @@ func (svc *Service) initMatrixClient() {
 				return
 			case _ = <-ticker.C:
 				log.Info().Msg("Attempting scheduled matrix relogin")
+				// if it worked previously we dont want the program to die now on error
 				svc.matrixClientLogin()
 			}
 		}
 	}()
 }
 
-func (svc *Service) matrixClientLogin() {
+func (svc *Service) matrixClientLogin() error {
 	// TODO: while probably not required but put this in a mutex just in case
 	log.Info().Msg("Logging into Matrix")
 	resp, err := svc.matrixClient.Login(&gomatrix.ReqLogin{
@@ -48,9 +52,11 @@ func (svc *Service) matrixClientLogin() {
 	})
 	if err != nil {
 		log.Error().Err(err).Msg("Error logging in to matrix")
+		return err
 	}
 	svc.matrixClient.SetCredentials(resp.UserID, resp.AccessToken)
 	log.Info().Msg("Logged into matrix")
+	return nil
 }
 
 // SendMatrixText sends a text message on given matrix channel.
