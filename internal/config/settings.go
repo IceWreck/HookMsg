@@ -28,6 +28,7 @@ type Config struct {
 	MatrixTerminalUser   string                   `yaml:"matrix_terminal_user"`
 	MatrixTerminalFilter string                   `yaml:"matrix_terminal_filter"`
 	ScriptsConfig        string                   `yaml:"scripts_config"`
+	ScriptsListKey       string                   `yaml:"scripts_list_key"`
 }
 
 // MatrixChannel has matrix room id and hookmsg API key for that channel

@@ -29,6 +29,8 @@ func (app *Application) routes() http.Handler {
 
 	r.Get("/healthcheck", app.healthCheck)
 
+	r.Get("/scripts", app.listScripts)
+
 	r.Route("/hooks", func(r chi.Router) {
 		r.Get("/script/{endpoint}", app.scriptHook)
 		r.Post("/script/{endpoint}", app.scriptHook)

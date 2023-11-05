@@ -46,4 +46,4 @@ matrix_terminal_filter: "4" # matrix filter (fill the fields above then run NewF
 
 # Scripts Config
 scripts_config: "./enabled_scripts.example.json"
-
+scripts_list_key: "XXXXXXXXXXXX" # secret required to view the list of available scripts
